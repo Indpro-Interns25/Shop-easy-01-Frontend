@@ -1,68 +1,40 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import "tailwindcss";
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* small helper for the login hero image used by the login page */
+.bg-login-image{
+  background-image: url('/src/assets/login-image_3.jpg');
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+/* left hero using local asset */
+.left-hero{
+	/* keep a dark fallback -- full background is set on page-bg */
+	background-color: #1f1f1f;
 }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+/* full page background used by login page */
+.page-bg{
+	background-image: url('/src/assets/login-image_3.jpg');
+	/* full-screen hero */
+	background-position: center;
+	background-size: cover;
+	background-repeat: no-repeat;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* ensure we never tile the image; cover keeps it filling the area */
+
+/* right panel hero: show the same image inside the right column without repeating; contain to show full subject */
+/* right-hero removed - using single page-bg instead */
+
+@media (max-width: 1100px){
+	.right-hero{
+		/* on narrower screens, fall back to contain so it fits */
+		background-size: contain;
+		background-position: center right;
+	}
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* right column solid background (approximate dominant color of the image) */
+.right-bg{
+	/* transparent - we want the glass panel to blur the underlying page-bg image, not sit on a solid color */
+	background: transparent;
 }
