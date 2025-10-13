@@ -5,19 +5,31 @@
   background-image: url('/src/assets/login-image_3.jpg');
 }
 
+/* login specific background using the original image */
+.login-bg{
+	background-image: url('/src/assets/login-image_3.jpg');
+	background-position: center;
+	background-size: cover;
+	background-repeat: no-repeat;
+}
+
 /* left hero using local asset */
 .left-hero{
 	/* keep a dark fallback -- full background is set on page-bg */
 	background-color: #1f1f1f;
 }
 
-/* full page background used by login page */
+/* full page gradient background used across pages (replaces image) */
 .page-bg{
-	background-image: url('/src/assets/login-image_3.jpg');
-	/* full-screen hero */
+	/* radial gradient: darker center and darker edges in brown/gray tones */
+	background: radial-gradient(circle at center, #4e372f 0%, #5d4838 25%, #3a2f2a 55%, #0b0b0b 100%);
 	background-position: center;
 	background-size: cover;
-	background-repeat: no-repeat;
+}
+
+/* alternative subtle gradient helper */
+.page-gradient{
+  background: linear-gradient(120deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
 }
 
 /* ensure we never tile the image; cover keeps it filling the area */
