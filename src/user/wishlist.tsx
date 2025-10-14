@@ -55,6 +55,7 @@ const Wishlist: React.FC<Props> = ({ onBack, onOpenCart }) => {
 
   function removeItem(id: string) {
     setItems((prev) => prev.filter((p) => p.id !== id))
+    window.dispatchEvent(new Event('wishlist-updated'))
   }
 
   function moveToCart(id: string) {
@@ -63,6 +64,7 @@ const Wishlist: React.FC<Props> = ({ onBack, onOpenCart }) => {
     const cart = readCart()
     if (!cart.find((c) => c.id === id)) {
       writeCart([...cart, { ...prod, qty: 1 }])
+      window.dispatchEvent(new Event('cart-updated'))
     }
     removeItem(id)
     onOpenCart?.()

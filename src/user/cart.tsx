@@ -61,10 +61,12 @@ const Cart: React.FC<Props> = ({ onBack, onOpenWishlist }) => {
         .map((p) => (p.id === id ? { ...p, qty: Math.max(1, (p.qty || 1) + delta) } : p))
         .filter(Boolean),
     )
+    window.dispatchEvent(new Event('cart-updated'))
   }
 
   function removeItem(id: string) {
     setItems((prev) => prev.filter((p) => p.id !== id))
+    window.dispatchEvent(new Event('cart-updated'))
   }
 
   function moveToWishlist(id: string) {
@@ -73,6 +75,7 @@ const Cart: React.FC<Props> = ({ onBack, onOpenWishlist }) => {
     const wishlist = readWishlist()
     if (!wishlist.find((w) => w.id === id)) {
       writeWishlist([...wishlist, { ...prod, qty: 1 }])
+      window.dispatchEvent(new Event('wishlist-updated'))
     }
     removeItem(id)
   }

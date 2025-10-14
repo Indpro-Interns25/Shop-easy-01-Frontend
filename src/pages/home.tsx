@@ -1,9 +1,9 @@
 import React from 'react'
 
 type Props = {
-  onLoginClick?: () => void
   onCartClick?: () => void
   onWishlistClick?: () => void
+  onLoginClick?: () => void
 }
 
 type Product = {
@@ -36,7 +36,7 @@ function writeLocal<T>(key: string, items: T[]) {
   localStorage.setItem(key, JSON.stringify(items))
 }
 
-const Home: React.FC<Props> = ({ onLoginClick, onCartClick, onWishlistClick }) => {
+const Home: React.FC<Props> = ({ onCartClick, onWishlistClick }) => {
   function addToCart(p: Product) {
     const cart = readLocal<Product>(CART_KEY)
     const exists = cart.find((c) => c.id === p.id)
@@ -47,6 +47,7 @@ const Home: React.FC<Props> = ({ onLoginClick, onCartClick, onWishlistClick }) =
     } else {
       writeLocal<Product>(CART_KEY, [...cart, { ...p, qty: 1 }])
     }
+    window.dispatchEvent(new Event('cart-updated'))
     onCartClick?.()
   }
 
@@ -55,6 +56,7 @@ const Home: React.FC<Props> = ({ onLoginClick, onCartClick, onWishlistClick }) =
     if (!w.find((x) => x.id === p.id)) {
       writeLocal(WISHLIST_KEY, [...w, p])
     }
+    window.dispatchEvent(new Event('wishlist-updated'))
     onWishlistClick?.()
   }
 
@@ -68,20 +70,7 @@ const Home: React.FC<Props> = ({ onLoginClick, onCartClick, onWishlistClick }) =
             <p className="text-white/80 mt-1">Handpicked products to brighten your day.</p>
           </div>
 
-          <div className="flex items-center gap-4">
-            <button
-              onClick={onLoginClick}
-              className="px-5 py-2 rounded-full bg-white/10 backdrop-blur text-white"
-            >
-              Login
-            </button>
-            <button
-              onClick={onCartClick}
-              className="px-4 py-2 rounded-full bg-gradient-to-r from-amber-400 to-pink-500 text-white"
-            >
-              Cart
-            </button>
-          </div>
+          {/* navbar contains the action buttons (Cart, Wishlist, Login) */}
         </header>
 
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

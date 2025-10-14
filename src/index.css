@@ -1,10 +1,35 @@
 @import "tailwindcss";
 
-/* small helper for the login hero image used by the login page */
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
+
+/* Custom dropdown arrow for role select */
+.dropdown-arrow {
+  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 16px;
+}
+
+/* Small reset to remove default browser margins that caused a white strip at the very top */
+html, body, #root {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	/* use same radial gradient as .page-bg so top area blends with the page */
+	background: radial-gradient(circle at center, #4e372f 0%, #5d4838 25%, #3a2f2a 55%, #0b0b0b 100%);
+	background-position: center;
+	background-size: cover;
+}
 .bg-login-image{
   background-image: url('/src/assets/login-image_3.jpg');
 }
-
 /* login specific background using the original image */
 .login-bg{
 	background-image: url('/src/assets/login-image_3.jpg');
@@ -12,13 +37,11 @@
 	background-size: cover;
 	background-repeat: no-repeat;
 }
-
 /* left hero using local asset */
 .left-hero{
 	/* keep a dark fallback -- full background is set on page-bg */
 	background-color: #1f1f1f;
 }
-
 /* full page gradient background used across pages (replaces image) */
 .page-bg{
 	/* radial gradient: darker center and darker edges in brown/gray tones */
@@ -26,17 +49,10 @@
 	background-position: center;
 	background-size: cover;
 }
-
 /* alternative subtle gradient helper */
 .page-gradient{
   background: linear-gradient(120deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
 }
-
-/* ensure we never tile the image; cover keeps it filling the area */
-
-/* right panel hero: show the same image inside the right column without repeating; contain to show full subject */
-/* right-hero removed - using single page-bg instead */
-
 @media (max-width: 1100px){
 	.right-hero{
 		/* on narrower screens, fall back to contain so it fits */
@@ -44,7 +60,6 @@
 		background-position: center right;
 	}
 }
-
 /* right column solid background (approximate dominant color of the image) */
 .right-bg{
 	/* transparent - we want the glass panel to blur the underlying page-bg image, not sit on a solid color */
