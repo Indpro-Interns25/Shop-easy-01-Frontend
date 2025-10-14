@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
+import { api } from '../utils/api'
+import { useAuth } from '../hooks/useAuth'
 
 type Product = {
   id: string
-  title: string
+  name: string
   price: number
   image?: string
-  qty?: number
+  quantity?: number
+  description?: string
+  stock?: number
 }
 
 type Props = {
@@ -13,71 +17,143 @@ type Props = {
   onOpenWishlist?: () => void
 }
 
-const CART_KEY = 'shopeasy_cart'
-const WISHLIST_KEY = 'shopeasy_wishlist'
-
-function readCart(): Product[] {
-  try {
-    const raw = localStorage.getItem(CART_KEY)
-    return raw ? JSON.parse(raw) : []
-  } catch {
-    return []
-  }
-}
-
-function writeCart(items: Product[]) {
-  localStorage.setItem(CART_KEY, JSON.stringify(items))
-}
-
-function readWishlist(): Product[] {
-  try {
-    const raw = localStorage.getItem(WISHLIST_KEY)
-    return raw ? JSON.parse(raw) : []
-  } catch {
-    return []
-  }
-}
-
-function writeWishlist(items: Product[]) {
-  localStorage.setItem(WISHLIST_KEY, JSON.stringify(items))
-}
-
 const Cart: React.FC<Props> = ({ onBack, onOpenWishlist }) => {
+  const { token, isAuthenticated } = useAuth()
   const [items, setItems] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    setItems(readCart())
-  }, [])
-
-  useEffect(() => {
-    writeCart(items)
-  }, [items])
-
-  const total = items.reduce((s, i) => s + i.price * (i.qty || 1), 0)
-
-  function changeQty(id: string, delta: number) {
-    setItems((prev) =>
-      prev
-        .map((p) => (p.id === id ? { ...p, qty: Math.max(1, (p.qty || 1) + delta) } : p))
-        .filter(Boolean),
-    )
-    window.dispatchEvent(new Event('cart-updated'))
-  }
-
-  function removeItem(id: string) {
-    setItems((prev) => prev.filter((p) => p.id !== id))
-    window.dispatchEvent(new Event('cart-updated'))
-  }
-
-  function moveToWishlist(id: string) {
-    const prod = items.find((p) => p.id === id)
-    if (!prod) return
-    const wishlist = readWishlist()
-    if (!wishlist.find((w) => w.id === id)) {
-      writeWishlist([...wishlist, { ...prod, qty: 1 }])
-      window.dispatchEvent(new Event('wishlist-updated'))
+  const fetchCartItems = useCallback(async () => {
+    if (!token) return
+    
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await api.getCartItems(token)
+      
+      if (response.success) {
+        // Transform database response to match frontend Product type
+        const cartItems = response.data.map((item: {
+          product_id: string;
+          name: string;
+          price: string;
+          image: string;
+          quantity: number;
+          description: string;
+          stock: number;
+        }) => ({
+          id: item.product_id,
+          name: item.name,
+          price: parseFloat(item.price),
+          image: item.image,
+          quantity: item.quantity,
+          description: item.description,
+          stock: item.stock
+        }))
+        setItems(cartItems)
+      }
+    } catch (err) {
+      console.error('Error fetching cart:', err)
+      setError(err instanceof Error ? err.message : 'Failed to load cart')
+      // Fallback to localStorage
+      setItems(readCart())
+    } finally {
+      setLoading(false)
     }
-    removeItem(id)
+  }, [token])
+
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      fetchCartItems()
+    } else {
+      // Fallback to localStorage for non-authenticated users
+      setItems(readCart())
+      setLoading(false)
+    }
+  }, [isAuthenticated, token, fetchCartItems])
+
+  const total = items.reduce((s, i) => s + i.price * (i.quantity || 1), 0)
+
+  const changeQty = async (id: string, delta: number) => {
+    const item = items.find(i => i.id === id)
+    if (!item) return
+
+    const newQuantity = Math.max(1, (item.quantity || 1) + delta)
+
+    if (isAuthenticated && token) {
+      try {
+        await api.updateCartItem(token, id, newQuantity)
+        setItems(prev => 
+          prev.map(p => (p.id === id ? { ...p, quantity: newQuantity } : p))
+        )
+      } catch (err) {
+        console.error('Error updating cart:', err)
+        setError(err instanceof Error ? err.message : 'Failed to update cart')
+      }
+    } else {
+      // Fallback to localStorage
+      setItems(prev => 
+        prev.map(p => (p.id === id ? { ...p, quantity: newQuantity } : p))
+      )
+      writeCart(items.map(p => (p.id === id ? { ...p, quantity: newQuantity } : p)))
+      window.dispatchEvent(new Event('cart-updated'))
+    }
+  }
+
+  const removeItem = async (id: string) => {
+    if (isAuthenticated && token) {
+      try {
+        await api.removeFromCart(token, id)
+        setItems(prev => prev.filter(p => p.id !== id))
+      } catch (err) {
+        console.error('Error removing from cart:', err)
+        setError(err instanceof Error ? err.message : 'Failed to remove item')
+      }
+    } else {
+      // Fallback to localStorage
+      setItems(prev => prev.filter(p => p.id !== id))
+      writeCart(items.filter(p => p.id !== id))
+      window.dispatchEvent(new Event('cart-updated'))
+    }
+  }
+
+  const moveToWishlist = async (id: string) => {
+    const prod = items.find(p => p.id === id)
+    if (!prod) return
+
+    if (isAuthenticated && token) {
+      try {
+        await api.addToWishlist(token, id)
+        await removeItem(id)
+        window.dispatchEvent(new Event('wishlist-updated'))
+      } catch (err) {
+        console.error('Error moving to wishlist:', err)
+        setError(err instanceof Error ? err.message : 'Failed to move to wishlist')
+      }
+    } else {
+      // Fallback to localStorage
+      const wishlist = readWishlist()
+      if (!wishlist.find(w => w.id === id)) {
+        writeWishlist([...wishlist, { ...prod, quantity: 1 }])
+        window.dispatchEvent(new Event('wishlist-updated'))
+      }
+      removeItem(id)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen page-bg py-12 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+              <p className="text-white/80">Loading cart...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -111,6 +187,12 @@ const Cart: React.FC<Props> = ({ onBack, onOpenWishlist }) => {
             </div>
           </div>
 
+          {error && (
+            <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-4 text-red-200">
+              <p className="text-sm">⚠️ {error}</p>
+            </div>
+          )}
+
           {items.length === 0 ? (
             <div className="bg-white/6 rounded-xl p-12 text-center shadow-lg backdrop-blur-md border border-white/8">
               <svg className="mx-auto mb-4 h-14 w-14 text-white/70" viewBox="0 0 24 24" fill="none">
@@ -120,20 +202,43 @@ const Cart: React.FC<Props> = ({ onBack, onOpenWishlist }) => {
               </svg>
               <h3 className="text-2xl font-semibold text-white">Your cart is empty</h3>
               <p className="text-sm text-white/80 mt-2">Add products to your cart to see them here.</p>
+              {!isAuthenticated && (
+                <p className="text-xs text-amber-300 mt-2">💡 Sign in to sync your cart across devices</p>
+              )}
             </div>
           ) : (
             <div className="space-y-4">
               {items.map((it) => (
                 <div key={it.id} className="bg-white/6 rounded-lg p-4 flex gap-4 items-center shadow-lg backdrop-blur-md border border-white/8">
                   <div className="w-24 h-24 bg-gradient-to-br from-amber-400 to-pink-500 rounded overflow-hidden flex-shrink-0 flex items-center justify-center text-white font-bold">
-                    {it.image ? <img src={it.image} alt={it.title} className="w-full h-full object-cover" /> : <div className="px-2">IMG</div>}
+                    {it.image ? (
+                      <img 
+                        src={it.image} 
+                        alt={it.name} 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          target.parentElement!.innerHTML = '<div class="px-2">IMG</div>';
+                        }}
+                      />
+                    ) : (
+                      <div className="px-2">IMG</div>
+                    )}
                   </div>
 
                   <div className="flex-1 text-white">
                     <div className="flex items-start justify-between">
                       <div>
-                        <div className="font-semibold text-lg">{it.title}</div>
-                        <div className="text-sm text-white/80 mt-1">Product variant, color or short description</div>
+                        <div className="font-semibold text-lg">{it.name}</div>
+                        <div className="text-sm text-white/80 mt-1">
+                          {it.description || 'Product description'}
+                        </div>
+                        {it.stock !== undefined && it.stock <= 5 && it.stock > 0 && (
+                          <div className="text-xs text-amber-400 mt-1">
+                            Only {it.stock} left in stock
+                          </div>
+                        )}
                       </div>
                       <div className="text-right">
                         <div className="font-semibold">${it.price.toFixed(2)}</div>
@@ -145,25 +250,31 @@ const Cart: React.FC<Props> = ({ onBack, onOpenWishlist }) => {
                       <div className="flex items-center gap-2 bg-white/6 rounded px-3 py-1">
                         <button
                           onClick={() => changeQty(it.id, -1)}
-                          className="w-8 h-8 bg-white/10 rounded flex items-center justify-center text-white"
+                          className="w-8 h-8 bg-white/10 rounded flex items-center justify-center text-white hover:bg-white/20"
                         >
                           -
                         </button>
-                        <div className="w-10 text-center">{it.qty || 1}</div>
+                        <div className="w-10 text-center">{it.quantity || 1}</div>
                         <button
                           onClick={() => changeQty(it.id, +1)}
-                          className="w-8 h-8 bg-white/10 rounded flex items-center justify-center text-white"
+                          className="w-8 h-8 bg-white/10 rounded flex items-center justify-center text-white hover:bg-white/20"
                         >
                           +
                         </button>
                       </div>
 
                       <div className="flex items-center gap-3">
-                        <button onClick={() => moveToWishlist(it.id)} className="text-sm text-amber-300 flex items-center gap-1">
+                        <button 
+                          onClick={() => moveToWishlist(it.id)} 
+                          className="text-sm text-amber-300 flex items-center gap-1 hover:text-amber-200"
+                        >
                           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none"><path d="M20.84 4.61c-.39-.38-1.02-.38-1.41 0L12 11.04 4.57 4.6a1 1 0 0 0-1.41 1.42l7.42 7.46L3.16 20.9a1 1 0 1 0 1.41 1.41l7.43-7.41 7.4 7.38a1 1 0 0 0 1.41-1.41L13.83 13.5l7.01-7.09c.38-.39.38-1.02 0-1.4z" stroke="currentColor" strokeWidth={1.2} strokeLinecap="round" strokeLinejoin="round"/></svg>
                           Save
                         </button>
-                        <button onClick={() => removeItem(it.id)} className="text-sm text-rose-300 flex items-center gap-1">
+                        <button 
+                          onClick={() => removeItem(it.id)} 
+                          className="text-sm text-rose-300 flex items-center gap-1 hover:text-rose-200"
+                        >
                           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none"><path d="M3 6h18" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round"/><path d="M8 6v14a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round"/></svg>
                           Remove
                         </button>
@@ -181,7 +292,7 @@ const Cart: React.FC<Props> = ({ onBack, onOpenWishlist }) => {
           <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
           <div className="flex justify-between text-sm text-white/80 mb-2">
             <span>Items</span>
-            <span>{items.length}</span>
+            <span>{items.reduce((sum, item) => sum + (item.quantity || 1), 0)}</span>
           </div>
           <div className="flex justify-between text-sm text-white/80 mb-4">
             <span>Shipping</span>
@@ -192,12 +303,53 @@ const Cart: React.FC<Props> = ({ onBack, onOpenWishlist }) => {
             <span>${total.toFixed(2)}</span>
           </div>
 
-          <button className="w-full px-4 py-3 bg-gradient-to-r from-amber-400 via-pink-500 to-rose-500 text-white rounded-lg mb-3 shadow">Proceed to Checkout</button>
-          <button className="w-full px-4 py-3 bg-white/8 border border-white/10 rounded-lg">Continue Shopping</button>
+          <button 
+            disabled={items.length === 0}
+            className={`w-full px-4 py-3 rounded-lg mb-3 shadow ${
+              items.length === 0 
+                ? 'bg-gray-500 cursor-not-allowed text-gray-300' 
+                : 'bg-gradient-to-r from-amber-400 via-pink-500 to-rose-500 text-white hover:from-amber-500 hover:via-pink-600 hover:to-rose-600'
+            }`}
+          >
+            Proceed to Checkout
+          </button>
+          <button 
+            onClick={onBack}
+            className="w-full px-4 py-3 bg-white/8 border border-white/10 rounded-lg hover:bg-white/12"
+          >
+            Continue Shopping
+          </button>
         </aside>
       </div>
     </div>
   )
+}
+
+// Fallback localStorage functions for non-authenticated users
+function readCart(): Product[] {
+  try {
+    const raw = localStorage.getItem('shopeasy_cart')
+    return raw ? JSON.parse(raw) : []
+  } catch {
+    return []
+  }
+}
+
+function writeCart(items: Product[]) {
+  localStorage.setItem('shopeasy_cart', JSON.stringify(items))
+}
+
+function readWishlist(): Product[] {
+  try {
+    const raw = localStorage.getItem('shopeasy_wishlist')
+    return raw ? JSON.parse(raw) : []
+  } catch {
+    return []
+  }
+}
+
+function writeWishlist(items: Product[]) {
+  localStorage.setItem('shopeasy_wishlist', JSON.stringify(items))
 }
 
 export default Cart
