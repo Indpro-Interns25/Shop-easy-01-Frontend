@@ -318,8 +318,8 @@ const Home: React.FC<Props> = ({ onCartClick, onWishlistClick }) => {
 
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((p) => (
-            <article key={p.id} className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
-              <div className="h-48 flex items-center justify-center mb-4 bg-gray-50 rounded-xl overflow-hidden">
+            <article key={p.id} className="bg-rose-50 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-rose-100">
+              <div className="h-48 flex items-center justify-center mb-4 bg-white rounded-xl overflow-hidden">
                 <img 
                   src={p.image} 
                   alt={p.name} 
@@ -332,13 +332,13 @@ const Home: React.FC<Props> = ({ onCartClick, onWishlistClick }) => {
               </div>
               
               <div className="space-y-2">
-                <h3 className="font-semibold text-lg text-gray-800">{p.name}</h3>
-                <div className="text-xl font-bold text-amber-800">
+                <h3 className="font-semibold text-lg text-rose-800">{p.name}</h3>
+                <div className="text-xl font-bold text-rose-800">
                   ${typeof p.price === 'number' ? p.price.toFixed(2) : p.price}
                 </div>
                 
                 {p.description && (
-                  <p className="text-sm text-gray-600 line-clamp-2">
+                  <p className="text-sm text-rose-600 line-clamp-2">
                     {p.description}
                   </p>
                 )}
@@ -358,7 +358,7 @@ const Home: React.FC<Props> = ({ onCartClick, onWishlistClick }) => {
                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
                         : cartItems.has(p.id)
                           ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg'
-                          : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg hover:shadow-xl'
+                          : 'bg-gradient-to-r from-amber-400 via-pink-500 to-rose-500 hover:from-amber-500 hover:via-pink-600 hover:to-rose-600 text-white shadow-lg hover:shadow-xl'
                     }`}
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
