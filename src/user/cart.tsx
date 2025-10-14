@@ -137,7 +137,10 @@ const Cart: React.FC<Props> = ({ onBack, onOpenWishlist }) => {
         writeWishlist([...wishlist, { ...prod, quantity: 1 }])
         window.dispatchEvent(new Event('wishlist-updated'))
       }
-      removeItem(id)
+      // Remove from cart after successfully adding to wishlist
+      setItems(prev => prev.filter(p => p.id !== id))
+      writeCart(items.filter(p => p.id !== id))
+      window.dispatchEvent(new Event('cart-updated'))
     }
   }
 

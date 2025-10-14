@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '../hooks/useAuth'
+import { api } from '../utils/api'
 
 type Props = {
   onCart?: () => void
@@ -16,20 +17,51 @@ function readCount(key: string) {
   try {
     const raw = localStorage.getItem(key)
     const arr = raw ? JSON.parse(raw) : []
-    return Array.isArray(arr) ? arr.length : 0
+    return Array.isArray(arr) ? arr.reduce((sum: number, item: { quantity?: number }) => sum + (item.quantity || 1), 0) : 0
   } catch {
     return 0
   }
 }
 
 const Navbar: React.FC<Props> = ({ onCart, onWishlist, onLogin, onProfile, onLogout }) => {
-  const { isAuthenticated, logout } = useAuth()
-  const [cartCount, setCartCount] = useState(() => readCount(CART_KEY))
-  const [wishCount, setWishCount] = useState(() => readCount(WISHLIST_KEY))
+  const { isAuthenticated, logout, token } = useAuth()
+  const [cartCount, setCartCount] = useState(0)
+  const [wishCount, setWishCount] = useState(0)
+
+  const fetchCounts = useCallback(async () => {
+    if (isAuthenticated && token) {
+      try {
+        // Fetch database counts
+        const [cartResponse, wishlistResponse] = await Promise.all([
+          api.getCartCount(token),
+          api.getWishlistCount(token)
+        ])
+        
+        if (cartResponse.success) {
+          setCartCount(cartResponse.data.count)
+        }
+        if (wishlistResponse.success) {
+          setWishCount(wishlistResponse.data.count)
+        }
+      } catch (error) {
+        console.error('Error fetching counts:', error)
+        // Fallback to localStorage
+        setCartCount(readCount(CART_KEY))
+        setWishCount(readCount(WISHLIST_KEY))
+      }
+    } else {
+      // Use localStorage for non-authenticated users
+      setCartCount(readCount(CART_KEY))
+      setWishCount(readCount(WISHLIST_KEY))
+    }
+  }, [isAuthenticated, token])
 
   const handleAuthAction = () => {
     if (isAuthenticated) {
       logout()
+      // Reset counts after logout
+      setCartCount(readCount(CART_KEY))
+      setWishCount(readCount(WISHLIST_KEY))
       onLogout?.()
     } else {
       onLogin?.()
@@ -37,13 +69,34 @@ const Navbar: React.FC<Props> = ({ onCart, onWishlist, onLogin, onProfile, onLog
   }
 
   useEffect(() => {
+    fetchCounts()
+  }, [fetchCounts])
+
+  useEffect(() => {
     const onStorage = () => {
-      setCartCount(readCount(CART_KEY))
-      setWishCount(readCount(WISHLIST_KEY))
+      if (!isAuthenticated) {
+        setCartCount(readCount(CART_KEY))
+        setWishCount(readCount(WISHLIST_KEY))
+      }
     }
+    
+    const onCartUpdated = () => {
+      if (isAuthenticated && token) {
+        fetchCounts()
+      } else {
+        setCartCount(readCount(CART_KEY))
+      }
+    }
+    
+    const onWishUpdated = () => {
+      if (isAuthenticated && token) {
+        fetchCounts()
+      } else {
+        setWishCount(readCount(WISHLIST_KEY))
+      }
+    }
+
     window.addEventListener('storage', onStorage)
-    const onCartUpdated = () => setCartCount(readCount(CART_KEY))
-    const onWishUpdated = () => setWishCount(readCount(WISHLIST_KEY))
     window.addEventListener('cart-updated', onCartUpdated as EventListener)
     window.addEventListener('wishlist-updated', onWishUpdated as EventListener)
 
@@ -52,7 +105,7 @@ const Navbar: React.FC<Props> = ({ onCart, onWishlist, onLogin, onProfile, onLog
       window.removeEventListener('cart-updated', onCartUpdated as EventListener)
       window.removeEventListener('wishlist-updated', onWishUpdated as EventListener)
     }
-  }, [])
+  }, [isAuthenticated, token, fetchCounts])
 
   return (
     <nav
