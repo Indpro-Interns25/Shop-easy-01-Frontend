@@ -5,7 +5,6 @@ import Signup from './authentication/signup'
 import Cart from './user/cart'
 import Wishlist from './user/wishlist'
 import Navbar from './pages/navbar'
-import ConnectionTest from './components/ConnectionTest'
 import { AuthProvider } from './contexts/AuthContext'
 import './index.css'
 
@@ -14,7 +13,6 @@ function App() {
 
   return (
     <AuthProvider>
-      <ConnectionTest />
       {page !== 'login' && page !== 'signup' && (
         <Navbar
           onCart={() => setPage('cart')}
