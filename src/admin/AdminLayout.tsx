@@ -79,6 +79,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage, onPage
             <button 
               onClick={() => setSidebarOpen(false)}
               className="lg:hidden p-2 rounded-lg hover:bg-gray-700 transition-colors"
+              title="Close sidebar"
+              aria-label="Close sidebar"
             >
               <X className="h-5 w-5 text-gray-300" />
             </button>
@@ -153,6 +155,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage, onPage
             <button
               onClick={() => setSidebarOpen(true)}
               className="lg:hidden p-2 hover:bg-white/10 border border-transparent hover:border-white/20 rounded-lg"
+              title="Open sidebar"
+              aria-label="Open sidebar"
             >
               <Menu className="h-6 w-6 text-white" />
             </button>

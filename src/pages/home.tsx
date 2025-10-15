@@ -6,7 +6,6 @@ type Props = {
   onCartClick?: () => void
   onWishlistClick?: () => void
   onLoginClick?: () => void
-  onAdminClick?: () => void
 }
 
 type Product = {
@@ -224,8 +223,8 @@ const Home: React.FC<Props> = ({ onCartClick, onWishlistClick }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-amber-900" style={{ backgroundColor: '#8B4513' }}>
-        <div className="bg-gradient-to-br from-rose-100 via-orange-50 to-pink-100 mx-6 my-6 rounded-3xl shadow-2xl" style={{ minHeight: '50vh' }}>
+      <div className="min-h-screen bg-custom-brown">
+        <div className="bg-gradient-to-br from-rose-100 via-orange-50 to-pink-100 mx-6 my-6 rounded-3xl shadow-2xl min-h-[50vh]">
           <div className="flex items-center justify-center h-full min-h-[50vh]">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-800 mx-auto mb-4"></div>
@@ -238,15 +237,15 @@ const Home: React.FC<Props> = ({ onCartClick, onWishlistClick }) => {
   }
 
   return (
-    <div className="min-h-screen bg-amber-900" style={{ backgroundColor: '#8B4513' }}>
+    <div className="min-h-screen bg-custom-brown">
       {/* Hero Section */}
       <div className="relative">
         {/* Main Content Container */}
-        <div className="bg-gradient-to-br from-rose-100 via-orange-50 to-pink-100 mx-6 my-6 rounded-3xl shadow-2xl overflow-hidden" style={{ minHeight: '50vh' }}>
+        <div className="bg-gradient-to-br from-rose-100 via-orange-50 to-pink-100 mx-6 my-6 rounded-3xl shadow-2xl overflow-hidden min-h-[50vh]">
           <div className="flex flex-col lg:flex-row">
             {/* Left Content Section */}
             <div className="flex-1 p-12 lg:p-16">
-              <nav className="flex items-center justify-between mb-12">
+              <nav className="flex justify-between items-center mb-16">
                 <div className="text-2xl font-bold text-gray-800">ShopEase</div>
                 <div className="flex items-center gap-8 text-gray-600">
                   <a href="#" className="hover:text-gray-800 transition-colors">Home</a>
@@ -269,8 +268,7 @@ const Home: React.FC<Props> = ({ onCartClick, onWishlistClick }) => {
                 </p>
 
                 <button 
-                  className="bg-amber-800 hover:bg-amber-900 text-white px-8 py-3 rounded-lg flex items-center gap-3 transition-all duration-300 shadow-lg hover:shadow-xl"
-                  style={{ backgroundColor: '#92400e' }}
+                  className="bg-amber-800 hover:bg-amber-900 text-white px-8 py-3 rounded-lg flex items-center gap-3 transition-all duration-300 shadow-lg hover:shadow-xl bg-yellow-800"
                 >
                   <span className="font-medium">Explore</span>
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
