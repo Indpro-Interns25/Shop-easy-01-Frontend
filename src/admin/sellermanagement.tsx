@@ -288,6 +288,8 @@ const SellerManagement: React.FC = () => {
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="px-4 py-3 border border-white/20 bg-white/10 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent min-w-[180px]"
+              title="Filter by status"
+              aria-label="Filter sellers by status"
             >
               <option value="all">All Status</option>
               <option value="active">Active</option>
@@ -301,6 +303,8 @@ const SellerManagement: React.FC = () => {
               value={verificationFilter}
               onChange={(e) => setVerificationFilter(e.target.value)}
               className="px-4 py-3 border border-white/20 bg-white/10 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent min-w-[180px]"
+              title="Filter by verification status"
+              aria-label="Filter sellers by verification status"
             >
               <option value="all">All Verification</option>
               <option value="verified">Verified</option>
@@ -313,6 +317,8 @@ const SellerManagement: React.FC = () => {
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
               className="px-4 py-3 border border-white/20 bg-white/10 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent min-w-[180px]"
+              title="Filter by category"
+              aria-label="Filter sellers by category"
             >
               <option value="all">All Categories</option>
               <option value="electronics">Electronics</option>

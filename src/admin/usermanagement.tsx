@@ -254,6 +254,8 @@ const UserManagement: React.FC = () => {
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
               className="px-4 py-3 border border-gray-600 bg-gray-700 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent min-w-[150px]"
+              title="Filter by role"
+              aria-label="Filter users by role"
             >
               <option value="all">All Roles</option>
               <option value="customer">Customers</option>
@@ -266,6 +268,8 @@ const UserManagement: React.FC = () => {
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="px-4 py-3 border border-gray-600 bg-gray-700 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent min-w-[150px]"
+              title="Filter by status"
+              aria-label="Filter users by status"
             >
               <option value="all">All Status</option>
               <option value="active">Active</option>

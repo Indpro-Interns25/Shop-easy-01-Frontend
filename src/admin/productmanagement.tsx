@@ -170,6 +170,8 @@ const ProductManagement: React.FC = () => {
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="px-4 py-3 border border-white/20 bg-white/10 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent min-w-[200px]"
+              title="Filter by category"
+              aria-label="Filter products by category"
             >
               {categories.map(category => (
                 <option key={category} value={category}>{category}</option>
@@ -181,6 +183,8 @@ const ProductManagement: React.FC = () => {
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="px-4 py-3 border border-white/20 bg-white/10 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent min-w-[150px]"
+              title="Filter by status"
+              aria-label="Filter products by status"
             >
               <option value="all">All Status</option>
               <option value="active">Active</option>
@@ -295,15 +299,25 @@ const ProductManagement: React.FC = () => {
                     </td>
                     <td className="py-4 px-6">
                       <div className="flex items-center justify-center gap-2">
-                        <button className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors">
+                        <button 
+                          className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors"
+                          title="View product"
+                          aria-label="View product"
+                        >
                           <Eye className="h-4 w-4" />
                         </button>
-                        <button className="p-2 text-orange-400 hover:bg-orange-500/20 rounded-lg transition-colors">
+                        <button 
+                          className="p-2 text-orange-400 hover:bg-orange-500/20 rounded-lg transition-colors"
+                          title="Edit product"
+                          aria-label="Edit product"
+                        >
                           <Edit className="h-4 w-4" />
                         </button>
                         <button 
                           onClick={() => handleDeleteProduct(product.id)}
                           className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
+                          title="Delete product"
+                          aria-label="Delete product"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>

@@ -101,6 +101,10 @@ const popularPages: PopularPage[] = [
 const WebsiteAnalysis: React.FC = () => {
   const [dateRange, setDateRange] = useState('7days');
 
+  const getWidthClass = (percentage: number): string => {
+    const rounded = Math.round(percentage / 5) * 5; // Round to nearest 5
+    return `w-pct-${rounded}`;
+  };
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) {
@@ -132,6 +136,8 @@ const WebsiteAnalysis: React.FC = () => {
               value={dateRange}
               onChange={(e) => setDateRange(e.target.value)}
               className="px-4 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              title="Select date range"
+              aria-label="Select analytics date range"
             >
               <option value="24hours">Last 24 Hours</option>
               <option value="7days">Last 7 Days</option>
@@ -268,8 +274,7 @@ const WebsiteAnalysis: React.FC = () => {
                     <span className="text-sm text-white/70">{formatNumber(source.visitors)}</span>
                     <div className="w-20 bg-white/20 rounded-full h-2">
                       <div 
-                        className={`h-2 rounded-full ${source.color}`}
-                        style={{ width: `${source.percentage}%` }}
+                        className={`h-2 rounded-full ${source.color} transition-all duration-300 ${getWidthClass(source.percentage)}`}
                       ></div>
                     </div>
                     <span className="text-sm font-medium text-white/70 w-8">{source.percentage}%</span>
@@ -302,8 +307,7 @@ const WebsiteAnalysis: React.FC = () => {
                     <p className="font-bold text-white">{device.percentage}%</p>
                     <div className="w-16 bg-white/20 rounded-full h-2 mt-1">
                       <div 
-                        className="h-2 bg-amber-500 rounded-full"
-                        style={{ width: `${device.percentage}%` }}
+                        className={`h-2 bg-amber-500 rounded-full transition-all duration-300 ${getWidthClass(device.percentage)}`}
                       ></div>
                     </div>
                   </div>
