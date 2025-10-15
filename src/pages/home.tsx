@@ -6,7 +6,7 @@ type Props = {
   onCartClick?: () => void
   onWishlistClick?: () => void
   onLoginClick?: () => void
-  onNavigate?: (page: 'home' | 'Brands' | 'About') => void
+  onNavigate?: (page: 'home' | 'Brands' | 'About'| 'Collections') => void
 }
 
 type Product = {
@@ -252,7 +252,7 @@ const Home: React.FC<Props> = ({ onCartClick, onWishlistClick,onNavigate }) => {
                 <button onClick={() => onNavigate?.('home')} className="hover:text-gray-800 transition-colors">Home</button>
 <button onClick={() => onNavigate?.('Brands')} className="hover:text-gray-800 transition-colors">Brands</button>
 <button onClick={() => onNavigate?.('About')} className="hover:text-gray-800 transition-colors">About Us</button>
-<button onClick={() => onNavigate?.('collections')} className="hover:text-gray-800 transition-colors">collection</button>
+<button onClick={() => onNavigate?.('Collections')} className="hover:text-gray-800 transition-colors">collection</button>
 
 
                 </div>

@@ -7,14 +7,15 @@ import Wishlist from './user/wishlist'
 import Navbar from './pages/navbar'
 //import Collections from './pages/Collections'
 import Brands from './pages/Brands'
-import AboutUs from './pages/aboutus';    
+import AboutUs from './pages/aboutus';  
+import Collections from './pages/Collections';  
 import Admin from './admin';
 import { AuthProvider } from './contexts/AuthContext'
 import { useAuth } from './hooks/useAuth'
 import './index.css'
 
 function AppContent() {
-  const [page, setPage] = useState<'home' | 'login' | 'signup' | 'cart' | 'wishlist' | 'About'|'Brands'>('home')
+  const [page, setPage] = useState<'home' | 'login' | 'signup' | 'cart' | 'wishlist' | 'About'|'Brands'|'Collections'>('home')
   const { isAuthenticated, user, logout } = useAuth()
 
   // Check if current user is admin (hardcoded email)
@@ -72,6 +73,14 @@ function AppContent() {
         {page === "Brands" && <Brands onNavigate={(p) => setPage(p)} />}
 
         {page === "About" && <AboutUs onNavigate={(p: string | ((prevState: "home" | "login" | "signup" | "cart" | "wishlist" | "About" | "Brands") => "home" | "login" | "signup" | "cart" | "wishlist" | "About" | "Brands")) => setPage(p)} />}
+        {page === 'Collections' && (
+  <Collections
+    onCartClick={() => setPage('cart')}
+    onWishlistClick={() => setPage('wishlist')}
+    onLoginClick={() => setPage('login')}
+    onBack={() => setPage('home')}
+  />
+)}
 
       </div>
     </>
