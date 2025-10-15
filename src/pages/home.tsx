@@ -6,6 +6,7 @@ type Props = {
   onCartClick?: () => void
   onWishlistClick?: () => void
   onLoginClick?: () => void
+  onAdminClick?: () => void
 }
 
 type Product = {
