@@ -119,7 +119,7 @@ const Wishlist: React.FC<Props> = ({ onBack, onOpenCart }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen page-bg py-12 px-4">
+      <div className="min-h-screen bg-custom- py-12 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
@@ -133,7 +133,7 @@ const Wishlist: React.FC<Props> = ({ onBack, onOpenCart }) => {
   }
 
   return (
-    <div className="min-h-screen page-bg py-12 px-4">
+    <div className="min-h-screen bg-custom-brown py-12 px-4">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
