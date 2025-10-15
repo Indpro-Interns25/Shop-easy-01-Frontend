@@ -6,6 +6,7 @@ type Props = {
   onCartClick?: () => void
   onWishlistClick?: () => void
   onLoginClick?: () => void
+  onNavigate?: (page: 'home' | 'Brands' | 'About') => void
 }
 
 type Product = {
@@ -37,7 +38,7 @@ function writeLocal<T>(key: string, items: T[]) {
   localStorage.setItem(key, JSON.stringify(items))
 }
 
-const Home: React.FC<Props> = ({ onCartClick, onWishlistClick }) => {
+const Home: React.FC<Props> = ({ onCartClick, onWishlistClick,onNavigate }) => {
   const { token, isAuthenticated } = useAuth()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
@@ -248,10 +249,12 @@ const Home: React.FC<Props> = ({ onCartClick, onWishlistClick }) => {
               <nav className="flex justify-between items-center mb-16">
                 <div className="text-2xl font-bold text-gray-800">ShopEase</div>
                 <div className="flex items-center gap-8 text-gray-600">
-                  <a href="#" className="hover:text-gray-800 transition-colors">Home</a>
-                  <a href="#" className="hover:text-gray-800 transition-colors">Collections</a>
-                  <a href="#" className="hover:text-gray-800 transition-colors">Brands</a>
-                  <a href="#" className="hover:text-gray-800 transition-colors">About Us</a>
+                <button onClick={() => onNavigate?.('home')} className="hover:text-gray-800 transition-colors">Home</button>
+<button onClick={() => onNavigate?.('Brands')} className="hover:text-gray-800 transition-colors">Brands</button>
+<button onClick={() => onNavigate?.('About')} className="hover:text-gray-800 transition-colors">About Us</button>
+<button onClick={() => onNavigate?.('collections')} className="hover:text-gray-800 transition-colors">collection</button>
+
+
                 </div>
               </nav>
 

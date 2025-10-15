@@ -5,13 +5,16 @@ import Signup from './authentication/signup'
 import Cart from './user/cart'
 import Wishlist from './user/wishlist'
 import Navbar from './pages/navbar'
+//import Collections from './pages/Collections'
+import Brands from './pages/Brands'
+import AboutUs from './pages/aboutus';    
 import Admin from './admin';
 import { AuthProvider } from './contexts/AuthContext'
 import { useAuth } from './hooks/useAuth'
 import './index.css'
 
 function AppContent() {
-  const [page, setPage] = useState<'home' | 'login' | 'signup' | 'cart' | 'wishlist'>('home')
+  const [page, setPage] = useState<'home' | 'login' | 'signup' | 'cart' | 'wishlist' | 'About'|'Brands'>('home')
   const { isAuthenticated, user, logout } = useAuth()
 
   // Check if current user is admin (hardcoded email)
@@ -56,6 +59,7 @@ function AppContent() {
             onLoginClick={() => setPage('login')}
             onCartClick={() => setPage('cart')}
             onWishlistClick={() => setPage('wishlist')}
+            onNavigate={(p) => setPage(p)}
           />
         )}
         {page === 'login' && <Login onClose={() => setPage('home')} onSignupClick={() => setPage('signup')} />}
@@ -64,6 +68,11 @@ function AppContent() {
           <Cart onBack={() => setPage('home')} onOpenWishlist={() => setPage('wishlist')} />
         )}
         {page === 'wishlist' && <Wishlist onBack={() => setPage('home')} onOpenCart={() => setPage('cart')} />}
+        
+        {page === "Brands" && <Brands onNavigate={(p) => setPage(p)} />}
+
+        {page === "About" && <AboutUs onNavigate={(p: string | ((prevState: "home" | "login" | "signup" | "cart" | "wishlist" | "About" | "Brands") => "home" | "login" | "signup" | "cart" | "wishlist" | "About" | "Brands")) => setPage(p)} />}
+
       </div>
     </>
   )
