@@ -198,7 +198,7 @@ const Wishlist: React.FC<Props> = ({ onBack, onOpenCart }) => {
                 </div>
                 <div className="flex-1">
                   <div className="font-semibold text-lg">{it.name}</div>
-                  <div className="text-sm text-white/80">${it.price.toFixed(2)}</div>
+                  <div className="text-sm text-white/80">${typeof it.price === "number" ? it.price.toFixed(2) : "0.00"}</div>
                   {it.description && (
                     <div className="text-xs text-white/60 mt-1 line-clamp-2">
                       {it.description}

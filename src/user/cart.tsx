@@ -244,7 +244,7 @@ const Cart: React.FC<Props> = ({ onBack, onOpenWishlist }) => {
                         )}
                       </div>
                       <div className="text-right">
-                        <div className="font-semibold text-rose-800">${it.price.toFixed(2)}</div>
+                        <div className="font-semibold text-rose-800">${typeof it.price === "number" ? it.price.toFixed(2) : "0.00"}</div>
                         <div className="text-sm text-rose-500">each</div>
                       </div>
                     </div>
