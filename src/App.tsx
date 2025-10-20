@@ -13,9 +13,10 @@ import Admin from './admin';
 import { AuthProvider } from './contexts/AuthContext'
 import { useAuth } from './hooks/useAuth'
 import './index.css'
+import Profile  from './user/profile.tsx';
 
 function AppContent() {
-  const [page, setPage] = useState<'home' | 'login' | 'signup' | 'cart' | 'wishlist' | 'About'|'Brands'|'Collections'>('home')
+  const [page, setPage] = useState<'home' | 'login' | 'signup' | 'cart' | 'wishlist' | 'About'|'Brands'|'Collections'|'profile'>('home')
   const { isAuthenticated, user, logout } = useAuth()
 
   // Check if current user is admin (hardcoded email)
@@ -47,7 +48,7 @@ function AppContent() {
           onCart={() => setPage('cart')}
           onWishlist={() => setPage('wishlist')}
           onLogin={() => setPage('login')}
-          onProfile={() => alert('Profile clicked')}
+          onProfile={() => setPage('profile')}
           onLogout={() => {
             logout()
             setPage('home')
@@ -71,7 +72,7 @@ function AppContent() {
         {page === 'wishlist' && <Wishlist onBack={() => setPage('home')} onOpenCart={() => setPage('cart')} />}
         
         {page === "Brands" && <Brands onNavigate={(p) => setPage(p)} />}
-
+        {page === "profile" && <Profile onBack={() => setPage("home")} />}
         {page === "About" && <AboutUs onNavigate={(p: string | ((prevState: "home" | "login" | "signup" | "cart" | "wishlist" | "About" | "Brands") => "home" | "login" | "signup" | "cart" | "wishlist" | "About" | "Brands")) => setPage(p)} />}
         {page === 'Collections' && (
   <Collections
