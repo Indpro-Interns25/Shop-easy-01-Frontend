@@ -109,7 +109,7 @@ const Navbar: React.FC<Props> = ({ onCart, onWishlist, onLogin, onProfile, onLog
 
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-40 px-6 py-3 flex items-center justify-between transition-all duration-200 backdrop-blur-md bg-white/6 border-b border-white/8"
+      className="fixed top-0 left-0 right-0 z-40 px-6 py-3 flex items-center justify-between transition-all duration-200 backdrop-blur-md bg-[#ddaf8e]/50 border-b border-white/8"
     >
       <div>
         <button onClick={onProfile} title="Profile" aria-label="Open profile" className="w-10 h-10 rounded-full bg-white/6 flex items-center justify-center text-white">

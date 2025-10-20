@@ -160,7 +160,7 @@ const Cart: React.FC<Props> = ({ onBack, onOpenWishlist }) => {
   }
 
   return (
-    <div className="min-h-screen page-bg py-12 px-4">
+    <div className="min-h-screen bg-custom-brown py-12 px-4">
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <div className="flex items-center justify-between mb-6">
@@ -244,7 +244,7 @@ const Cart: React.FC<Props> = ({ onBack, onOpenWishlist }) => {
                         )}
                       </div>
                       <div className="text-right">
-                        <div className="font-semibold text-rose-800">${it.price.toFixed(2)}</div>
+                        <div className="font-semibold text-rose-800">${typeof it.price === "number" ? it.price.toFixed(2) : "0.00"}</div>
                         <div className="text-sm text-rose-500">each</div>
                       </div>
                     </div>

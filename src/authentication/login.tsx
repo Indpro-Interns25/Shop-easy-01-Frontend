@@ -57,7 +57,7 @@ const Login: React.FC<Props> = ({ onClose, onSignupClick }) => {
     }
   }
   return (
-    <div className="relative flex h-screen login-bg">
+    <div className="relative flex h-screen bg-custom-brown login-bg">
       <aside className="w-[70%] relative text-white p-12 flex flex-col justify-between overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
         <div className="z-10">
